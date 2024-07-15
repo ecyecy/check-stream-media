@@ -209,6 +209,7 @@ ShowRegion() {
 #                                         #
 ###########################################
 
+# Netflix
 MediaUnlockTest_Netflix() {
     # LEGO Ninjago
     local result1=$(curl ${CURL_DEFAULT_OPTS} -fsL 'https://www.netflix.com/title/81280792' -w %{http_code} -o /dev/null -H 'host: www.netflix.com' -H 'accept-language: en-US,en;q=0.9' -H "sec-ch-ua: ${UA_SEC_CH_UA}" -H 'sec-ch-ua-mobile: ?0' -H 'sec-ch-ua-platform: "Windows"' -H 'sec-fetch-site: none' -H 'sec-fetch-mode: navigate' -H 'sec-fetch-user: ?1' -H 'sec-fetch-dest: document' --user-agent "${UA_BROWSER}")
@@ -222,7 +223,7 @@ MediaUnlockTest_Netflix() {
     fi
     if [ "$result1" == '404' ] && [ "$result2" == '404' ]; then
         echo -n -e "\r Netflix:\t\t\t\t${Font_Yellow}Originals Only${Font_Suffix}\n"
-        modifyJsonTemplate 'Netflix_result' '仅限原创'
+        modifyJsonTemplate 'Netflix_result' 'NO (仅限原创)'
         return
     fi
     if [ "$result1" == '403' ] || [ "$result2" == '403' ]; then
@@ -242,6 +243,7 @@ MediaUnlockTest_Netflix() {
     modifyJsonTemplate 'Netflix_result' 'Failed' "${result1}_${result2}"
 }
 
+# DisneyPlus
 MediaUnlockTest_DisneyPlus() {
     if [ "${USE_IPV6}" == 1 ]; then
         echo -n -e "\r Disney+:\t\t\t\t${Font_Red}IPv6 Is Not Currently Supported${Font_Suffix}\n"
@@ -252,14 +254,14 @@ MediaUnlockTest_DisneyPlus() {
     local tempresult=$(curl ${CURL_DEFAULT_OPTS} -s 'https://disney.api.edge.bamgrid.com/devices' -X POST -H "authorization: Bearer ZGlzbmV5JmJyb3dzZXImMS4wLjA.Cu56AgSfBTDag5NiRA81oLHkDZfu5L3CKadnefEAY84" -H "content-type: application/json; charset=UTF-8" -d '{"deviceFamily":"browser","applicationRuntime":"chrome","deviceProfile":"windows","attributes":{}}' --user-agent "${UA_BROWSER}")
     if [ -z "$tempresult" ]; then
         echo -n -e "\r Disney+:\t\t\t\t${Font_Red}Failed (Network Connection)${Font_Suffix}\n"
-        modifyJsonTemplate 'DisneyPlus_result' 'No'
+        modifyJsonTemplate 'DisneyPlus_result' 'Error (检测失败)'
         return
     fi
 
     local is403=$(echo "$tempresult" | grep -i '403 ERROR')
     if [ -n "$is403" ]; then
         echo -n -e "\r Disney+:\t\t\t\t${Font_Red}No (IP Banned By Disney+)${Font_Suffix}\n"
-        modifyJsonTemplate 'DisneyPlus_result' 'No'
+        modifyJsonTemplate 'DisneyPlus_result' 'No (IP被禁)'
         return
     fi
 
@@ -279,7 +281,7 @@ MediaUnlockTest_DisneyPlus() {
 
     if [ -n "$isBlocked" ] || [ -n "$is403" ]; then
         echo -n -e "\r Disney+:\t\t\t\t${Font_Red}No (IP Banned By Disney+ 1)${Font_Suffix}\n"
-        modifyJsonTemplate 'DisneyPlus_result' 'No'
+        modifyJsonTemplate 'DisneyPlus_result' 'No (IP被禁)'
         return
     fi
 
@@ -323,6 +325,7 @@ MediaUnlockTest_DisneyPlus() {
     modifyJsonTemplate 'DisneyPlus_result' 'No'
 }
 
+# YouTube Premium
 MediaUnlockTest_YouTube_Premium() {
     local tmpresult=$(curl ${CURL_DEFAULT_OPTS} -sL 'https://www.youtube.com/premium' -H 'accept-language: en-US,en;q=0.9' -H 'cookie: YSC=FSCWhKo2Zgw; VISITOR_PRIVACY_METADATA=CgJERRIEEgAgYQ%3D%3D; PREF=f7=4000; __Secure-YEC=CgtRWTBGTFExeV9Iayjele2yBjIKCgJERRIEEgAgYQ%3D%3D; SOCS=CAISOAgDEitib3FfaWRlbnRpdHlmcm9udGVuZHVpc2VydmVyXzIwMjQwNTI2LjAxX3AwGgV6aC1DTiACGgYIgMnpsgY; VISITOR_INFO1_LIVE=Di84mAIbgKY; __Secure-BUCKET=CGQ' --user-agent "${UA_BROWSER}")
     if [ -z "$tmpresult" ]; then
@@ -358,7 +361,7 @@ MediaUnlockTest_YouTube_Premium() {
     fi
 
     echo -n -e "\r YouTube Premium:\t\t\t${Font_Red}Failed (Error: PAGE ERROR)${Font_Suffix}\n"
-    modifyJsonTemplate 'YouTube_Premium_result' 'Unknown'
+    modifyJsonTemplate 'YouTube_Premium_result' 'No'
 }
 
 # HBO GO Asia
@@ -397,7 +400,7 @@ MediaUnlockTest_HBOMax() {
     local httpCode=$(echo "$tmpresult" | grep '_TAG_' | awk -F'_TAG_' '{print $2}')
     if [ "$httpCode" == '000' ]; then
         echo -n -e "\r HBO Max:\t\t\t\t${Font_Red}Failed (Network Connection)${Font_Suffix}\n"
-        modifyJsonTemplate 'HBOMAX_result' 'No'
+        modifyJsonTemplate 'HBOMAX_result' 'Error (检测失败)'
         return
     fi
 
@@ -432,7 +435,7 @@ MediaUnlockTest_PrimeVideo() {
     local tmpresult=$(curl ${CURL_DEFAULT_OPTS} -sL 'https://www.primevideo.com' --user-agent "${UA_BROWSER}")
     if [ -z "$tmpresult" ]; then
         echo -n -e "\r Amazon Prime Video:\t\t\t${Font_Red}Failed (Network Connection)${Font_Suffix}\n"
-        modifyJsonTemplate 'AmazonPrime_result' 'No'
+        modifyJsonTemplate 'AmazonPrime_result' 'Error (检测失败)'
         return
     fi
 
@@ -451,7 +454,7 @@ MediaUnlockTest_PrimeVideo() {
     fi
     if [ -n "$region" ]; then
         echo -n -e "\r Amazon Prime Video:\t\t\t${Font_Green}Yes (Region: ${region})${Font_Suffix}\n"
-        modifyJsonTemplate 'AmazonPrime_result' 'Yes'
+        modifyJsonTemplate 'AmazonPrime_result' 'Yes' "${region}"
         return
     fi
 
@@ -464,7 +467,7 @@ MediaUnlockTest_Spotify() {
     local tmpresult=$(curl ${CURL_DEFAULT_OPTS} -s 'https://spclient.wg.spotify.com/signup/public/v1/account' -d "birth_day=11&birth_month=11&birth_year=2000&collect_personal_info=undefined&creation_flow=&creation_point=https%3A%2F%2Fwww.spotify.com%2Fhk-en%2F&displayname=Gay%20Lord&gender=male&iagree=1&key=a1e486e2729f46d6bb368d6b2bcda326&platform=www&referrer=&send-email=0&thirdpartyemail=0&identifier_token=AgE6YTvEzkReHNfJpO114514" -X POST -H "Accept-Language: en" --user-agent "${UA_BROWSER}")
     if [ -z "$tmpresult" ]; then
         echo -n -e "\r Spotify Registration:\t\t\t${Font_Red}Failed (Network Connection)${Font_Suffix}\n"
-        modifyJsonTemplate 'Spotify_result' 'No'
+        modifyJsonTemplate 'Spotify_result' 'Error (检测失败)'
         return
     fi
 
@@ -494,7 +497,7 @@ MediaUnlockTest_Spotify() {
     fi
     if [ "$statusCode" == '311' ]; then
         echo -n -e "\r Spotify Registration:\t\t\t${Font_Green}Yes (Region: ${region})${Font_Suffix}\n"
-        modifyJsonTemplate 'Spotify_result' 'Yes'
+        modifyJsonTemplate 'Spotify_result' 'Yes' "${region}"
         return
     fi
 
@@ -508,12 +511,12 @@ MediaUnlockTest_OpenAI() {
     local tmpresult2=$(curl ${CURL_DEFAULT_OPTS} -s 'https://ios.chat.openai.com/' -H 'authority: ios.chat.openai.com' -H 'accept: */*;q=0.8,application/signed-exchange;v=b3;q=0.7' -H 'accept-language: en-US,en;q=0.9' -H "sec-ch-ua: ${UA_SEC_CH_UA}" -H 'sec-ch-ua-mobile: ?0' -H 'sec-ch-ua-platform: "Windows"' -H 'sec-fetch-dest: document' -H 'sec-fetch-mode: navigate' -H 'sec-fetch-site: none' -H 'sec-fetch-user: ?1' -H 'upgrade-insecure-requests: 1' --user-agent "${UA_BROWSER}")
     if [ -z "$tmpresult1" ]; then
         echo -n -e "\r ChatGPT:\t\t\t\t${Font_Red}Failed (Network Connection)${Font_Suffix}\n"
-        modifyJsonTemplate 'OpenAI_result' 'No'
+        modifyJsonTemplate 'OpenAI_result' 'Error (检测失败)'
         return
     fi
     if [ -z "$tmpresult2" ]; then
         echo -n -e "\r ChatGPT:\t\t\t\t${Font_Red}Failed (Network Connection)${Font_Suffix}\n"
-        modifyJsonTemplate 'OpenAI_result' 'No'
+        modifyJsonTemplate 'OpenAI_result' 'Error (检测失败)'
         return
     fi
 
@@ -521,7 +524,7 @@ MediaUnlockTest_OpenAI() {
     local result2=$(echo "$tmpresult2" | grep -i 'VPN')
     if [ -z "$result2" ] && [ -z "$result1" ]; then
         echo -n -e "\r ChatGPT:\t\t\t\t${Font_Green}Yes${Font_Suffix}\n"
-        modifyJsonTemplate 'OpenAI_result' 'Yes'
+        modifyJsonTemplate 'OpenAI_result' 'Yes' "${region}"
         return
     fi
     if [ -n "$result2" ] && [ -n "$result1" ]; then
@@ -531,30 +534,18 @@ MediaUnlockTest_OpenAI() {
     fi
     if [ -z "$result1" ] && [ -n "$result2" ]; then
         echo -n -e "\r ChatGPT:\t\t\t\t${Font_Yellow}No (Only Available with Web Browser)${Font_Suffix}\n"
-        modifyJsonTemplate 'OpenAI_result' 'No'
+        modifyJsonTemplate 'OpenAI_result' 'No (仅限浏览器)'
         return
     fi
     if [ -n "$result1" ] && [ -z "$result2" ]; then
         echo -n -e "\r ChatGPT:\t\t\t\t${Font_Yellow}No (Only Available with Mobile APP)${Font_Suffix}\n"
-        modifyJsonTemplate 'OpenAI_result' 'No'
+        modifyJsonTemplate 'OpenAI_result' 'No (仅限APP)'
         return
     fi
 
     echo -n -e "\r ChatGPT:\t\t\t\t${Font_Red}Failed (Error: Unknown)${Font_Suffix}\n"
-    modifyJsonTemplate 'OpenAI_result' 'No'
+    modifyJsonTemplate 'OpenAI_result' 'Error (检测失败)'
 }
-
-
-###
- # @Author: Vincent Young
- # @Date: 2023-02-09 17:39:59
- # @LastEditors: Vincent Young
- # @LastEditTime: 2023-02-15 20:54:40
- # @FilePath: /OpenAI-Checker/openai.sh
- # @Telegram: https://t.me/missuo
- #
- # Copyright © 2023 by Vincent, All Rights Reserved.
-###
 
 ###########################################
 #                                         #
@@ -689,7 +680,7 @@ printInfo() {
     echo
     echo -e "${green_start}The code for this script to detect streaming media unlocking is all from the open source project https://github.com/lmc999/RegionRestrictionCheck , and the open source protocol is AGPL-3.0. This script is open source as required by the open source license. Thanks to the original author @lmc999 and everyone who made the pull request for this project for their contributions.${color_end}"
     echo
-    echo -e "${green_start}Project: https://github.com/iamsaltedfish/check-stream-media${color_end}"
+    echo -e "${green_start}Project: https://github.com/ecyecy/check-stream-media${color_end}"
     echo -e "${green_start}Version: 2024-07-15 v.3.0${color_end}"
     echo -e "${green_start}Author: @ecyecy${color_end}"
 }
