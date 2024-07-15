@@ -476,28 +476,51 @@ MediaUnlockTest_OpenAI() {
     local result2=$(echo "$tmpresult2" | grep -i 'VPN')
     if [ -z "$result2" ] && [ -z "$result1" ]; then
         local ipv4_supported=$(ping 1.1.1.1 -c 1 2>&1)
-        if [[ "$ipv4_supported" != *"received"* ]] && [[ "$ipv4_supported" != *"transmitted"* ]]; then
-            echo -n -e "\r OpenAI:\t\t\t\t${Font_Yellow}IPv4 is not supported on the current host. Skip...${Font_Suffix}\n"
-            modifyJsonTemplate 'OpenAI_result' 'IPv4 not supported'
+        local ipv6_supported=$(ping6 2606:4700:4700::1111 -c 1 2>&1)
+
+        if [[ "$ipv4_supported" != *"received"* ]] && [[ "$ipv4_supported" != *"transmitted"* ]] && [[ "$ipv6_supported" != *"received"* ]] && [[ "$ipv6_supported" != *"transmitted"* ]]; then
+            echo -n -e "\r OpenAI:\t\t\t\t${Font_Yellow}IPv4 and IPv6 are not supported on the current host. Skip...${Font_Suffix}\n"
+            modifyJsonTemplate 'OpenAI_result' 'IPv4 and IPv6 not supported'
             return
         fi
         
-        local_ipv4=$(curl -4 -sS https://chat.openai.com/cdn-cgi/trace | grep "ip=" | awk -F= '{print $2}')
-        iso2_code4=$(curl -4 -sS https://chat.openai.com/cdn-cgi/trace | grep "loc=" | awk -F= '{print $2}')
-        
-        if [ -z "$iso2_code4" ]; then
-            iso2_code4="UNKNOWN"
+        if [[ "$ipv4_supported" == *"received"* ]] || [[ "$ipv4_supported" == *"transmitted"* ]]; then
+            local_ipv4=$(curl -4 -sS https://chat.openai.com/cdn-cgi/trace | grep "ip=" | awk -F= '{print $2}')
+            iso2_code4=$(curl -4 -sS https://chat.openai.com/cdn-cgi/trace | grep "loc=" | awk -F= '{print $2}')
+            
+            if [ -z "$iso2_code4" ]; then
+                iso2_code4="UNKNOWN"
+            fi
+            
+            if [[ " ${SUPPORT_COUNTRY[@]} " =~ " ${iso2_code4} " ]]; then
+                echo -n -e "\r OpenAI:\t\t\t\t${Font_Green}Yes (Region: ${iso2_code4})${Font_Suffix}\n"
+                modifyJsonTemplate 'OpenAI_result' 'Yes' "${iso2_code4}"
+            else
+                echo -n -e "\r OpenAI:\t\t\t\t${Font_Red}No (Region: ${iso2_code4})${Font_Suffix}\n"
+                modifyJsonTemplate 'OpenAI_result' 'No' "${iso2_code4}"
+            fi
+            return
         fi
-        
-        if [[ " ${SUPPORT_COUNTRY[@]} " =~ " ${iso2_code4} " ]]; then
-            echo -n -e "\r OpenAI:\t\t\t\t${Font_Green}Yes (Region: ${iso2_code4})${Font_Suffix}\n"
-            modifyJsonTemplate 'OpenAI_result' 'Yes' "${iso2_code4}"
-        else
-            echo -n -e "\r OpenAI:\t\t\t\t${Font_Red}No (Region: ${iso2_code4})${Font_Suffix}\n"
-            modifyJsonTemplate 'OpenAI_result' 'No' "${iso2_code4}"
+
+        if [[ "$ipv6_supported" == *"received"* ]] || [[ "$ipv6_supported" == *"transmitted"* ]]; then
+            local_ipv6=$(curl -6 -sS https://chat.openai.com/cdn-cgi/trace | grep "ip=" | awk -F= '{print $2}')
+            iso2_code6=$(curl -6 -sS https://chat.openai.com/cdn-cgi/trace | grep "loc=" | awk -F= '{print $2}')
+            
+            if [ -z "$iso2_code6" ]; then
+                iso2_code6="UNKNOWN"
+            fi
+            
+            if [[ " ${SUPPORT_COUNTRY[@]} " =~ " ${iso2_code6} " ]]; then
+                echo -n -e "\r OpenAI:\t\t\t\t${Font_Green}Yes (Region: ${iso2_code6})${Font_Suffix}\n"
+                modifyJsonTemplate 'OpenAI_result' 'Yes' "${iso2_code6}"
+            else
+                echo -n -e "\r OpenAI:\t\t\t\t${Font_Red}No (Region: ${iso2_code6})${Font_Suffix}\n"
+                modifyJsonTemplate 'OpenAI_result' 'No' "${iso2_code6}"
+            fi
+            return
         fi
-        return
     fi
+
     if [ -n "$result2" ] && [ -n "$result1" ]; then
         echo -n -e "\r OpenAI:\t\t\t\t${Font_Red}No${Font_Suffix}\n"
         modifyJsonTemplate 'OpenAI_result' 'No'
