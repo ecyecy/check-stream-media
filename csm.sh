@@ -218,12 +218,12 @@ MediaUnlockTest_Netflix() {
 
     if [ "${result1}" == '000' ] || [ "$result2" == '000' ]; then
         echo -n -e "\r Netflix:\t\t\t\t${Font_Red}Failed (Network Connection)${Font_Suffix}\n"
-        modifyJsonTemplate 'Netflix_result' 'Error (检测失败)'
+        modifyJsonTemplate 'Netflix_result' 'Error'
         return
     fi
     if [ "$result1" == '404' ] && [ "$result2" == '404' ]; then
         echo -n -e "\r Netflix:\t\t\t\t${Font_Yellow}Originals Only${Font_Suffix}\n"
-        modifyJsonTemplate 'Netflix_result' 'NO (仅限原创)'
+        modifyJsonTemplate 'Netflix_result' 'No (Originals Only)'
         return
     fi
     if [ "$result1" == '403' ] || [ "$result2" == '403' ]; then
@@ -254,14 +254,14 @@ MediaUnlockTest_DisneyPlus() {
     local tempresult=$(curl ${CURL_DEFAULT_OPTS} -s 'https://disney.api.edge.bamgrid.com/devices' -X POST -H "authorization: Bearer ZGlzbmV5JmJyb3dzZXImMS4wLjA.Cu56AgSfBTDag5NiRA81oLHkDZfu5L3CKadnefEAY84" -H "content-type: application/json; charset=UTF-8" -d '{"deviceFamily":"browser","applicationRuntime":"chrome","deviceProfile":"windows","attributes":{}}' --user-agent "${UA_BROWSER}")
     if [ -z "$tempresult" ]; then
         echo -n -e "\r Disney+:\t\t\t\t${Font_Red}Failed (Network Connection)${Font_Suffix}\n"
-        modifyJsonTemplate 'DisneyPlus_result' 'Error (检测失败)'
+        modifyJsonTemplate 'DisneyPlus_result' 'Error'
         return
     fi
 
     local is403=$(echo "$tempresult" | grep -i '403 ERROR')
     if [ -n "$is403" ]; then
         echo -n -e "\r Disney+:\t\t\t\t${Font_Red}No (IP Banned By Disney+)${Font_Suffix}\n"
-        modifyJsonTemplate 'DisneyPlus_result' 'No (IP被禁)'
+        modifyJsonTemplate 'DisneyPlus_result' 'No'
         return
     fi
 
@@ -281,7 +281,7 @@ MediaUnlockTest_DisneyPlus() {
 
     if [ -n "$isBlocked" ] || [ -n "$is403" ]; then
         echo -n -e "\r Disney+:\t\t\t\t${Font_Red}No (IP Banned By Disney+ 1)${Font_Suffix}\n"
-        modifyJsonTemplate 'DisneyPlus_result' 'No (IP被禁)'
+        modifyJsonTemplate 'DisneyPlus_result' 'No'
         return
     fi
 
@@ -330,7 +330,7 @@ MediaUnlockTest_YouTube_Premium() {
     local tmpresult=$(curl ${CURL_DEFAULT_OPTS} -sL 'https://www.youtube.com/premium' -H 'accept-language: en-US,en;q=0.9' -H 'cookie: YSC=FSCWhKo2Zgw; VISITOR_PRIVACY_METADATA=CgJERRIEEgAgYQ%3D%3D; PREF=f7=4000; __Secure-YEC=CgtRWTBGTFExeV9Iayjele2yBjIKCgJERRIEEgAgYQ%3D%3D; SOCS=CAISOAgDEitib3FfaWRlbnRpdHlmcm9udGVuZHVpc2VydmVyXzIwMjQwNTI2LjAxX3AwGgV6aC1DTiACGgYIgMnpsgY; VISITOR_INFO1_LIVE=Di84mAIbgKY; __Secure-BUCKET=CGQ' --user-agent "${UA_BROWSER}")
     if [ -z "$tmpresult" ]; then
         echo -n -e "\r YouTube Premium:\t\t\t${Font_Red}Failed (Network Connection)${Font_Suffix}\n"
-        modifyJsonTemplate 'YouTube_Premium_result' 'Error (检测失败)'
+        modifyJsonTemplate 'YouTube_Premium_result' 'Error'
         return
     fi
 
@@ -361,37 +361,7 @@ MediaUnlockTest_YouTube_Premium() {
     fi
 
     echo -n -e "\r YouTube Premium:\t\t\t${Font_Red}Failed (Error: PAGE ERROR)${Font_Suffix}\n"
-    modifyJsonTemplate 'YouTube_Premium_result' 'Error (检测失败)'
-}
-
-# HBO GO Asia
-MediaUnlockTest_HBOGO_ASIA() {
-    if [ "${USE_IPV6}" == 1 ]; then
-        echo -n -e "\r HBO GO Asia:\t\t\t\t${Font_Red}IPv6 Is Not Currently Supported${Font_Suffix}\n"
-        return
-    fi
-
-    local tmpresult=$(curl ${CURL_DEFAULT_OPTS} -s 'https://api2.hbogoasia.com/v1/geog?lang=undefined&version=0&bundleId=www.hbogoasia.com' --user-agent "${UA_BROWSER}")
-    if [ -z "$tmpresult" ]; then
-        echo -n -e "\r HBO GO Asia:\t\t\t\t${Font_Red}Failed (Network Connection)${Font_Suffix}\n"
-        return
-    fi
-
-    local result=$(echo "$tmpresult" | grep -woP '"territory"\s{0,}:\s{0,}"\K[^"]+')
-    if [ -z "$result" ]; then
-        echo -n -e "\r HBO GO Asia:\t\t\t\t${Font_Red}No${Font_Suffix}\n"
-        return
-    fi
-
-    local region=$(echo "$tmpresult" | grep -woP '"country"\s{0,}:\s{0,}"\K[^"]+')
-    if [ -n "$region" ]; then
-        echo -n -e "\r HBO GO Asia:\t\t\t\t${Font_Green}Yes (Region: ${region})${Font_Suffix}\n"
-        modifyJsonTemplate 'HBOGOAsia_result' 'Yes'
-        return
-    fi
-
-    echo -n -e "\r HBO GO Asia:\t\t\t\t${Font_Red}Failed (Error: Country Code Not Found)${Font_Suffix}\n"
-    modifyJsonTemplate 'HBOGOAsia_result' 'No'
+    modifyJsonTemplate 'YouTube_Premium_result' 'Error'
 }
 
 # HBO MAX
@@ -400,7 +370,7 @@ MediaUnlockTest_HBOMax() {
     local httpCode=$(echo "$tmpresult" | grep '_TAG_' | awk -F'_TAG_' '{print $2}')
     if [ "$httpCode" == '000' ]; then
         echo -n -e "\r HBO Max:\t\t\t\t${Font_Red}Failed (Network Connection)${Font_Suffix}\n"
-        modifyJsonTemplate 'HBOMAX_result' 'Error (检测失败)'
+        modifyJsonTemplate 'HBOMAX_result' 'Error'
         return
     fi
 
@@ -416,7 +386,7 @@ MediaUnlockTest_HBOMax() {
     fi
     if [ -n "$isUnavailable" ]; then
         echo -n -e "\r HBO Max:\t\t\t\t${Font_Green}Yes (Region: ${region})${Font_Suffix}\n"
-        modifyJsonTemplate 'HBOMAX_result' 'Yes'
+        modifyJsonTemplate 'HBOMAX_result' 'Yes' "${region}"
         return
     fi
 
@@ -435,7 +405,7 @@ MediaUnlockTest_PrimeVideo() {
     local tmpresult=$(curl ${CURL_DEFAULT_OPTS} -sL 'https://www.primevideo.com' --user-agent "${UA_BROWSER}")
     if [ -z "$tmpresult" ]; then
         echo -n -e "\r Amazon Prime Video:\t\t\t${Font_Red}Failed (Network Connection)${Font_Suffix}\n"
-        modifyJsonTemplate 'AmazonPrime_result' 'Error (检测失败)'
+        modifyJsonTemplate 'AmazonPrime_result' 'Error'
         return
     fi
 
@@ -467,7 +437,7 @@ MediaUnlockTest_Spotify() {
     local tmpresult=$(curl ${CURL_DEFAULT_OPTS} -s 'https://spclient.wg.spotify.com/signup/public/v1/account' -d "birth_day=11&birth_month=11&birth_year=2000&collect_personal_info=undefined&creation_flow=&creation_point=https%3A%2F%2Fwww.spotify.com%2Fhk-en%2F&displayname=Gay%20Lord&gender=male&iagree=1&key=a1e486e2729f46d6bb368d6b2bcda326&platform=www&referrer=&send-email=0&thirdpartyemail=0&identifier_token=AgE6YTvEzkReHNfJpO114514" -X POST -H "Accept-Language: en" --user-agent "${UA_BROWSER}")
     if [ -z "$tmpresult" ]; then
         echo -n -e "\r Spotify Registration:\t\t\t${Font_Red}Failed (Network Connection)${Font_Suffix}\n"
-        modifyJsonTemplate 'Spotify_result' 'Error (检测失败)'
+        modifyJsonTemplate 'Spotify_result' 'Error'
         return
     fi
 
@@ -507,44 +477,65 @@ MediaUnlockTest_Spotify() {
 
 # OpenAI
 MediaUnlockTest_OpenAI() {
+    SUPPORT_COUNTRY=(AL DZ AD AO AG AR AM AU AT AZ BS BD BB BE BZ BJ BT BO BA BW BR BN BG BF CV CA CL CO KM CG CR CI HR CY CZ DK DJ DM DO EC SV EE FJ FI FR GA GM GE DE GH GR GD GT GN GW GY HT VA HN HU IS IN ID IQ IE IL IT JM JP JO KZ KE KI KW KG LV LB LS LR LI LT LU MG MW MY MV ML MT MH MR MU MX FM MD MC MN ME MA MZ MM NA NR NP NL NZ NI NE NG MK NO OM PK PW PS PA PG PY PE PH PL PT QA RO RW KN LC VC WS SM ST SN RS SC SL SG SK SI SB ZA KR ES LK SR SE CH TW TZ TH TL TG TO TT TN TR TV UG UA AE GB US UY VU ZM)
+
     local tmpresult1=$(curl ${CURL_DEFAULT_OPTS} -s 'https://api.openai.com/compliance/cookie_requirements' -H 'authority: api.openai.com' -H 'accept: */*' -H 'accept-language: en-US,en;q=0.9' -H 'authorization: Bearer null' -H 'content-type: application/json' -H 'origin: https://platform.openai.com' -H 'referer: https://platform.openai.com/' -H "sec-ch-ua: ${UA_SEC_CH_UA}" -H 'sec-ch-ua-mobile: ?0' -H 'sec-ch-ua-platform: "Windows"' -H 'sec-fetch-dest: empty' -H 'sec-fetch-mode: cors' -H 'sec-fetch-site: same-site' --user-agent "${UA_BROWSER}")
     local tmpresult2=$(curl ${CURL_DEFAULT_OPTS} -s 'https://ios.chat.openai.com/' -H 'authority: ios.chat.openai.com' -H 'accept: */*;q=0.8,application/signed-exchange;v=b3;q=0.7' -H 'accept-language: en-US,en;q=0.9' -H "sec-ch-ua: ${UA_SEC_CH_UA}" -H 'sec-ch-ua-mobile: ?0' -H 'sec-ch-ua-platform: "Windows"' -H 'sec-fetch-dest: document' -H 'sec-fetch-mode: navigate' -H 'sec-fetch-site: none' -H 'sec-fetch-user: ?1' -H 'upgrade-insecure-requests: 1' --user-agent "${UA_BROWSER}")
     if [ -z "$tmpresult1" ]; then
-        echo -n -e "\r ChatGPT:\t\t\t\t${Font_Red}Failed (Network Connection)${Font_Suffix}\n"
-        modifyJsonTemplate 'OpenAI_result' 'Error (检测失败)'
+        echo -n -e "\r OpenAI:\t\t\t\t${Font_Red}Failed (Network Connection)${Font_Suffix}\n"
+        modifyJsonTemplate 'OpenAI_result' 'Error'
         return
     fi
     if [ -z "$tmpresult2" ]; then
-        echo -n -e "\r ChatGPT:\t\t\t\t${Font_Red}Failed (Network Connection)${Font_Suffix}\n"
-        modifyJsonTemplate 'OpenAI_result' 'Error (检测失败)'
+        echo -n -e "\r OpenAI:\t\t\t\t${Font_Red}Failed (Network Connection)${Font_Suffix}\n"
+        modifyJsonTemplate 'OpenAI_result' 'Error'
         return
     fi
 
     local result1=$(echo "$tmpresult1" | grep -i 'unsupported_country')
     local result2=$(echo "$tmpresult2" | grep -i 'VPN')
     if [ -z "$result2" ] && [ -z "$result1" ]; then
-        echo -n -e "\r ChatGPT:\t\t\t\t${Font_Green}Yes${Font_Suffix}\n"
-        modifyJsonTemplate 'OpenAI_result' 'Yes' "${region}"
+        local ipv4_supported=$(ping 1.1.1.1 -c 1 2>&1)
+        if [[ "$ipv4_supported" != *"received"* ]] && [[ "$ipv4_supported" != *"transmitted"* ]]; then
+            echo -n -e "\r OpenAI:\t\t\t\t${Font_Yellow}IPv4 is not supported on the current host. Skip...${Font_Suffix}\n"
+            modifyJsonTemplate 'OpenAI_result' 'IPv4 not supported'
+            return
+        fi
+        
+        local_ipv4=$(curl -4 -sS https://chat.openai.com/cdn-cgi/trace | grep "ip=" | awk -F= '{print $2}')
+        iso2_code4=$(curl -4 -sS https://chat.openai.com/cdn-cgi/trace | grep "loc=" | awk -F= '{print $2}')
+        
+        if [ -z "$iso2_code4" ]; then
+            iso2_code4="UNKNOWN"
+        fi
+        
+        if [[ " ${SUPPORT_COUNTRY[@]} " =~ " ${iso2_code4} " ]]; then
+            echo -n -e "\r OpenAI:\t\t\t\t${Font_Green}Yes (Region: ${iso2_code4})${Font_Suffix}\n"
+            modifyJsonTemplate 'OpenAI_result' 'Yes' "${iso2_code4}"
+        else
+            echo -n -e "\r OpenAI:\t\t\t\t${Font_Red}No (Region: ${iso2_code4})${Font_Suffix}\n"
+            modifyJsonTemplate 'OpenAI_result' 'No' "${iso2_code4}"
+        fi
         return
     fi
     if [ -n "$result2" ] && [ -n "$result1" ]; then
-        echo -n -e "\r ChatGPT:\t\t\t\t${Font_Red}No${Font_Suffix}\n"
+        echo -n -e "\r OpenAI:\t\t\t\t${Font_Red}No${Font_Suffix}\n"
         modifyJsonTemplate 'OpenAI_result' 'No'
         return
     fi
     if [ -z "$result1" ] && [ -n "$result2" ]; then
-        echo -n -e "\r ChatGPT:\t\t\t\t${Font_Yellow}No (Only Available with Web Browser)${Font_Suffix}\n"
-        modifyJsonTemplate 'OpenAI_result' 'No (仅限浏览器)'
+        echo -n -e "\r OpenAI:\t\t\t\t${Font_Yellow}No (Only Available with Web Browser)${Font_Suffix}\n"
+        modifyJsonTemplate 'OpenAI_result' 'No'
         return
     fi
     if [ -n "$result1" ] && [ -z "$result2" ]; then
-        echo -n -e "\r ChatGPT:\t\t\t\t${Font_Yellow}No (Only Available with Mobile APP)${Font_Suffix}\n"
-        modifyJsonTemplate 'OpenAI_result' 'No (仅限APP)'
+        echo -n -e "\r OpenAI:\t\t\t\t${Font_Yellow}No (Only Available with Mobile APP)${Font_Suffix}\n"
+        modifyJsonTemplate 'OpenAI_result' 'No'
         return
     fi
 
-    echo -n -e "\r ChatGPT:\t\t\t\t${Font_Red}Failed (Error: Unknown)${Font_Suffix}\n"
-    modifyJsonTemplate 'OpenAI_result' 'Error (检测失败)'
+    echo -n -e "\r OpenAI:\t\t\t\t${Font_Red}Failed (Error: Unknown)${Font_Suffix}\n"
+    modifyJsonTemplate 'OpenAI_result' 'Error'
 }
 
 ###########################################
@@ -558,7 +549,6 @@ createJsonTemplate() {
     "YouTube": "YouTube_Premium_result",
     "Netflix": "Netflix_result",
     "DisneyPlus": "DisneyPlus_result",
-    "HBOGOAsia": "HBOGOAsia_result",
     "HBOMAX": "HBOMAX_result",
     "AmazonPrime": "AmazonPrime_result",
     "Spotify": "Spotify_result",
@@ -690,7 +680,6 @@ runCheck() {
     MediaUnlockTest_Netflix 4
     MediaUnlockTest_YouTube_Premium 4
     MediaUnlockTest_DisneyPlus 4
-    MediaUnlockTest_HBOGO_ASIA 4
     MediaUnlockTest_HBOMax 4
     MediaUnlockTest_PrimeVideo 4
     MediaUnlockTest_Spotify 4
