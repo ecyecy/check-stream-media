@@ -480,7 +480,7 @@ MediaUnlockTest_OpenAI() {
 
         if [[ "$ipv4_supported" != *"received"* ]] && [[ "$ipv4_supported" != *"transmitted"* ]] && [[ "$ipv6_supported" != *"received"* ]] && [[ "$ipv6_supported" != *"transmitted"* ]]; then
             echo -n -e "\r OpenAI:\t\t\t\t${Font_Yellow}IPv4 and IPv6 are not supported on the current host. Skip...${Font_Suffix}\n"
-            modifyJsonTemplate 'OpenAI_result' 'IPv4 and IPv6 not supported'
+            modifyJsonTemplate 'OpenAI_result' 'No'
             return
         fi
         
@@ -528,12 +528,12 @@ MediaUnlockTest_OpenAI() {
     fi
     if [ -z "$result1" ] && [ -n "$result2" ]; then
         echo -n -e "\r OpenAI:\t\t\t\t${Font_Yellow}No (Only Available with Web Browser)${Font_Suffix}\n"
-        modifyJsonTemplate 'OpenAI_result' 'No'
+        modifyJsonTemplate 'OpenAI_result' 'No (Only Available with Web Browser)'
         return
     fi
     if [ -n "$result1" ] && [ -z "$result2" ]; then
         echo -n -e "\r OpenAI:\t\t\t\t${Font_Yellow}No (Only Available with Mobile APP)${Font_Suffix}\n"
-        modifyJsonTemplate 'OpenAI_result' 'No'
+        modifyJsonTemplate 'OpenAI_result' 'No (Only Available with Mobile APP)'
         return
     fi
 
