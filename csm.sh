@@ -218,7 +218,7 @@ MediaUnlockTest_Netflix() {
 
     if [ "${result1}" == '000' ] || [ "$result2" == '000' ]; then
         echo -n -e "\r Netflix:\t\t\t\t${Font_Red}Failed (Network Connection)${Font_Suffix}\n"
-        modifyJsonTemplate 'Netflix_result' 'Unknow'
+        modifyJsonTemplate 'Netflix_result' 'Unknown'
         return
     fi
     if [ "$result1" == '404' ] && [ "$result2" == '404' ]; then
@@ -251,7 +251,7 @@ MediaUnlockTest_DisneyPlus() {
         return
     elif [[ "$PreAssertion" == "curl"* ]]; then
         echo -n -e "\r Disney+:\t\t\t\t${Font_Red}Failed (Network Connection)${Font_Suffix}\n"
-        modifyJsonTemplate 'DisneyPlus_result' 'Unknow'
+        modifyJsonTemplate 'DisneyPlus_result' 'Unknown'
         return
     fi
 
@@ -299,7 +299,7 @@ MediaUnlockTest_DisneyPlus() {
         return
     else
         echo -n -e "\r Disney+:\t\t\t\t${Font_Red}Failed${Font_Suffix}\n"
-        modifyJsonTemplate 'DisneyPlus_result' 'Unknow'
+        modifyJsonTemplate 'DisneyPlus_result' 'Unknown'
         return
     fi
 
@@ -310,7 +310,7 @@ MediaUnlockTest_YouTube_Premium() {
     local tmpresult=$(curl ${CURL_DEFAULT_OPTS} -sL 'https://www.youtube.com/premium' -H 'accept-language: en-US,en;q=0.9' -H 'cookie: YSC=FSCWhKo2Zgw; VISITOR_PRIVACY_METADATA=CgJERRIEEgAgYQ%3D%3D; PREF=f7=4000; __Secure-YEC=CgtRWTBGTFExeV9Iayjele2yBjIKCgJERRIEEgAgYQ%3D%3D; SOCS=CAISOAgDEitib3FfaWRlbnRpdHlmcm9udGVuZHVpc2VydmVyXzIwMjQwNTI2LjAxX3AwGgV6aC1DTiACGgYIgMnpsgY; VISITOR_INFO1_LIVE=Di84mAIbgKY; __Secure-BUCKET=CGQ' --user-agent "${UA_BROWSER}")
     if [ -z "$tmpresult" ]; then
         echo -n -e "\r YouTube Premium:\t\t\t${Font_Red}Failed (Network Connection)${Font_Suffix}\n"
-        modifyJsonTemplate 'YouTube_Premium_result' 'Unknow'
+        modifyJsonTemplate 'YouTube_Premium_result' 'Unknown'
         return
     fi
 
@@ -341,7 +341,7 @@ MediaUnlockTest_YouTube_Premium() {
     fi
 
     echo -n -e "\r YouTube Premium:\t\t\t${Font_Red}Failed (Error: PAGE ERROR)${Font_Suffix}\n"
-    modifyJsonTemplate 'YouTube_Premium_result' 'Unknow'
+    modifyJsonTemplate 'YouTube_Premium_result' 'Unknown'
 }
 
 # HBO MAX
@@ -350,7 +350,7 @@ MediaUnlockTest_HBOMax() {
     local httpCode=$(echo "$tmpresult" | grep '_TAG_' | awk -F'_TAG_' '{print $2}')
     if [ "$httpCode" == '000' ]; then
         echo -n -e "\r HBO Max:\t\t\t\t${Font_Red}Failed (Network Connection)${Font_Suffix}\n"
-        modifyJsonTemplate 'HBOMAX_result' 'Unknow'
+        modifyJsonTemplate 'HBOMAX_result' 'Unknown'
         return
     fi
 
@@ -385,7 +385,7 @@ MediaUnlockTest_PrimeVideo() {
     local tmpresult=$(curl ${CURL_DEFAULT_OPTS} -sL 'https://www.primevideo.com' --user-agent "${UA_BROWSER}")
     if [ -z "$tmpresult" ]; then
         echo -n -e "\r Amazon Prime Video:\t\t\t${Font_Red}Failed (Network Connection)${Font_Suffix}\n"
-        modifyJsonTemplate 'AmazonPrime_result' 'Unknow'
+        modifyJsonTemplate 'AmazonPrime_result' 'Unknown'
         return
     fi
 
@@ -417,7 +417,7 @@ MediaUnlockTest_Spotify() {
     local tmpresult=$(curl ${CURL_DEFAULT_OPTS} -s 'https://spclient.wg.spotify.com/signup/public/v1/account' -d "birth_day=11&birth_month=11&birth_year=2000&collect_personal_info=undefined&creation_flow=&creation_point=https%3A%2F%2Fwww.spotify.com%2Fhk-en%2F&displayname=Gay%20Lord&gender=male&iagree=1&key=a1e486e2729f46d6bb368d6b2bcda326&platform=www&referrer=&send-email=0&thirdpartyemail=0&identifier_token=AgE6YTvEzkReHNfJpO114514" -X POST -H "Accept-Language: en" --user-agent "${UA_BROWSER}")
     if [ -z "$tmpresult" ]; then
         echo -n -e "\r Spotify Registration:\t\t\t${Font_Red}Failed (Network Connection)${Font_Suffix}\n"
-        modifyJsonTemplate 'Spotify_result' 'Unknow'
+        modifyJsonTemplate 'Spotify_result' 'Unknown'
         return
     fi
 
@@ -463,12 +463,12 @@ MediaUnlockTest_OpenAI() {
     local tmpresult2=$(curl ${CURL_DEFAULT_OPTS} -s 'https://ios.chat.openai.com/' -H 'authority: ios.chat.openai.com' -H 'accept: */*;q=0.8,application/signed-exchange;v=b3;q=0.7' -H 'accept-language: en-US,en;q=0.9' -H "sec-ch-ua: ${UA_SEC_CH_UA}" -H 'sec-ch-ua-mobile: ?0' -H 'sec-ch-ua-platform: "Windows"' -H 'sec-fetch-dest: document' -H 'sec-fetch-mode: navigate' -H 'sec-fetch-site: none' -H 'sec-fetch-user: ?1' -H 'upgrade-insecure-requests: 1' --user-agent "${UA_BROWSER}")
     if [ -z "$tmpresult1" ]; then
         echo -n -e "\r OpenAI:\t\t\t\t${Font_Red}Failed (Network Connection)${Font_Suffix}\n"
-        modifyJsonTemplate 'OpenAI_result' 'Unknow'
+        modifyJsonTemplate 'OpenAI_result' 'Unknown'
         return
     fi
     if [ -z "$tmpresult2" ]; then
         echo -n -e "\r OpenAI:\t\t\t\t${Font_Red}Failed (Network Connection)${Font_Suffix}\n"
-        modifyJsonTemplate 'OpenAI_result' 'Unknow'
+        modifyJsonTemplate 'OpenAI_result' 'Unknown'
         return
     fi
 
@@ -538,7 +538,7 @@ MediaUnlockTest_OpenAI() {
     fi
 
     echo -n -e "\r OpenAI:\t\t\t\t${Font_Red}Failed (Error: Unknown)${Font_Suffix}\n"
-    modifyJsonTemplate 'OpenAI_result' 'Unknow'
+    modifyJsonTemplate 'OpenAI_result' 'Unknown'
 }
 
 ###########################################
