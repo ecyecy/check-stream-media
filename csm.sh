@@ -690,7 +690,7 @@ printInfo() {
     echo -e "${green_start}The code for this script to detect streaming media unlocking is all from the open source project https://github.com/lmc999/RegionRestrictionCheck , and the open source protocol is AGPL-3.0. This script is open source as required by the open source license. Thanks to the original author @lmc999 and everyone who made the pull request for this project for their contributions.${color_end}"
     echo
     echo -e "${green_start}Project: https://github.com/iamsaltedfish/check-stream-media${color_end}"
-    echo -e "${green_start}Version: 2024-07-15 v.3.0.1${color_end}"
+    echo -e "${green_start}Version: 2024-07-15 v.3.0${color_end}"
     echo -e "${green_start}Author: @ecyecy${color_end}"
 }
 
