@@ -311,7 +311,7 @@ MediaUnlockTest_YouTube_Premium() {
 
     if [[ "$tmpresult" == "curl"* ]]; then
         echo -n -e "\r YouTube Premium:\t\t\t${Font_Red}Failed (Network Connection)${Font_Suffix}\n"
-        modifyJsonTemplate 'YouTube_Premium_result' 'Unknow'
+        modifyJsonTemplate 'YouTube_Premium_result' 'Unknown'
         return
     fi
 
@@ -339,7 +339,7 @@ MediaUnlockTest_YouTube_Premium() {
         return
     else
         echo -n -e "\r YouTube Premium:\t\t\t${Font_Red}Failed${Font_Suffix}\n"
-        modifyJsonTemplate 'YouTube_Premium_result' 'Unknow'
+        modifyJsonTemplate 'YouTube_Premium_result' 'Unknown'
     fi
 }
 
