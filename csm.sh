@@ -307,41 +307,41 @@ MediaUnlockTest_DisneyPlus() {
 
 # YouTube Premium
 MediaUnlockTest_YouTube_Premium() {
-    local tmpresult=$(curl ${CURL_DEFAULT_OPTS} -sL 'https://www.youtube.com/premium' -H 'accept-language: en-US,en;q=0.9' -H 'cookie: YSC=FSCWhKo2Zgw; VISITOR_PRIVACY_METADATA=CgJERRIEEgAgYQ%3D%3D; PREF=f7=4000; __Secure-YEC=CgtRWTBGTFExeV9Iayjele2yBjIKCgJERRIEEgAgYQ%3D%3D; SOCS=CAISOAgDEitib3FfaWRlbnRpdHlmcm9udGVuZHVpc2VydmVyXzIwMjQwNTI2LjAxX3AwGgV6aC1DTiACGgYIgMnpsgY; VISITOR_INFO1_LIVE=Di84mAIbgKY; __Secure-BUCKET=CGQ' --user-agent "${UA_BROWSER}")
-    if [ -z "$tmpresult" ]; then
+    local tmpresult=$(curl $useNIC $usePROXY $xForward --user-agent "${UA_Browser}" -${1} --max-time 10 -sSL -H "Accept-Language: en" -b "YSC=BiCUU3-5Gdk; CONSENT=YES+cb.20220301-11-p0.en+FX+700; GPS=1; VISITOR_INFO1_LIVE=4VwPMkB7W5A; PREF=tz=Asia.Shanghai; _gcl_au=1.1.1809531354.1646633279" "https://www.youtube.com/premium" 2>&1)
+
+    if [[ "$tmpresult" == "curl"* ]]; then
         echo -n -e "\r YouTube Premium:\t\t\t${Font_Red}Failed (Network Connection)${Font_Suffix}\n"
         modifyJsonTemplate 'YouTube_Premium_result' 'Unknown'
         return
     fi
 
     local isCN=$(echo "$tmpresult" | grep 'www.google.cn')
-
     if [ -n "$isCN" ]; then
         echo -n -e "\r YouTube Premium:\t\t\t${Font_Red}No${Font_Suffix} ${Font_Green}(Region: CN)${Font_Suffix}\n"
         modifyJsonTemplate 'YouTube_Premium_result' 'No' 'CN'
         return
     fi
 
-    local isNotAvailable=$(echo "$tmpresult" | grep -i 'Premium is not available in your country')
-    local region=$(echo "$tmpresult" | grep -woP '"INNERTUBE_CONTEXT_GL"\s{0,}:\s{0,}"\K[^"]+')
-    local isAvailable=$(echo "$tmpresult" | grep -i 'ad-free')
+    local isNotAvailable=$(echo "$tmpresult" | grep 'Premium is not available in your country')
+    local region=$(echo "$tmpresult" | grep "countryCode" | sed 's/.*"countryCode"//' | cut -f2 -d'"')
+    local isAvailable=$(echo "$tmpresult" | grep '/month')
 
     if [ -n "$isNotAvailable" ]; then
         echo -n -e "\r YouTube Premium:\t\t\t${Font_Red}No${Font_Suffix}\n"
         modifyJsonTemplate 'YouTube_Premium_result' 'No'
         return
-    fi
-    if [ -z "$region" ]; then
-        region='UNKNOWN'
-    fi
-    if [ -n "$isAvailable" ]; then
-        echo -n -e "\r YouTube Premium:\t\t\t${Font_Green}Yes (Region: ${region})${Font_Suffix}\n"
+    elif [ -n "$isAvailable" ] && [ -n "$region" ]; then
+        echo -n -e "\r YouTube Premium:\t\t\t${Font_Green}Yes (Region: $region)${Font_Suffix}\n"
         modifyJsonTemplate 'YouTube_Premium_result' 'Yes' "${region}"
         return
+    elif [ -z "$region" ] && [ -n "$isAvailable" ]; then
+        echo -n -e "\r YouTube Premium:\t\t\t${Font_Green}Yes${Font_Suffix}\n"
+        modifyJsonTemplate 'YouTube_Premium_result' 'Yes'
+        return
+    else
+        echo -n -e "\r YouTube Premium:\t\t\t${Font_Red}Failed${Font_Suffix}\n"
+        modifyJsonTemplate 'YouTube_Premium_result' 'Unknown'
     fi
-
-    echo -n -e "\r YouTube Premium:\t\t\t${Font_Red}Failed (Error: PAGE ERROR)${Font_Suffix}\n"
-    modifyJsonTemplate 'YouTube_Premium_result' 'Unknown'
 }
 
 # HBO MAX
