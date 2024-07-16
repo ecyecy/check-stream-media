@@ -311,23 +311,22 @@ MediaUnlockTest_YouTube_Premium() {
 
     if [[ "$tmpresult" == "curl"* ]]; then
         echo -n -e "\r YouTube Premium:\t\t\t${Font_Red}Failed (Network Connection)${Font_Suffix}\n"
-        modifyJsonTemplate 'YouTube_Premium_result' 'Unknown'
+        modifyJsonTemplate 'YouTube_Premium_result' 'Unknow'
         return
     fi
 
-    local isCN=$(echo "$tmpresult" | grep 'www.google.cn')
+    local isCN=$(echo $tmpresult | grep 'www.google.cn')
     if [ -n "$isCN" ]; then
-        echo -n -e "\r YouTube Premium:\t\t\t${Font_Red}No${Font_Suffix} ${Font_Green}(Region: CN)${Font_Suffix}\n"
+        echo -n -e "\r YouTube Premium:\t\t\t${Font_Red}No${Font_Suffix} ${Font_Green} (Region: CN)${Font_Suffix} \n"
         modifyJsonTemplate 'YouTube_Premium_result' 'No' 'CN'
         return
     fi
-
-    local isNotAvailable=$(echo "$tmpresult" | grep 'Premium is not available in your country')
-    local region=$(echo "$tmpresult" | grep "countryCode" | sed 's/.*"countryCode"//' | cut -f2 -d'"')
-    local isAvailable=$(echo "$tmpresult" | grep '/month')
+    local isNotAvailable=$(echo $tmpresult | grep 'Premium is not available in your country')
+    local region=$(echo $tmpresult | grep "countryCode" | sed 's/.*"countryCode"//' | cut -f2 -d'"')
+    local isAvailable=$(echo $tmpresult | grep '/month')
 
     if [ -n "$isNotAvailable" ]; then
-        echo -n -e "\r YouTube Premium:\t\t\t${Font_Red}No${Font_Suffix}\n"
+        echo -n -e "\r YouTube Premium:\t\t\t${Font_Red}No${Font_Suffix} \n"
         modifyJsonTemplate 'YouTube_Premium_result' 'No'
         return
     elif [ -n "$isAvailable" ] && [ -n "$region" ]; then
@@ -340,7 +339,7 @@ MediaUnlockTest_YouTube_Premium() {
         return
     else
         echo -n -e "\r YouTube Premium:\t\t\t${Font_Red}Failed${Font_Suffix}\n"
-        modifyJsonTemplate 'YouTube_Premium_result' 'Unknown'
+        modifyJsonTemplate 'YouTube_Premium_result' 'Unknow'
     fi
 }
 
